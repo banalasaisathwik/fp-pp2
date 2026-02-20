@@ -1,6 +1,5 @@
 import {type Request, type Response, type NextFunction} from "express";
 import {type UserInput} from "../types/user.types.js";
-import {type User} from "../types/user.types.js";
 import { verifyToken } from "../utlis/jwt.js";
 
 function validateInput(req: Request, res: Response, next: NextFunction) {
