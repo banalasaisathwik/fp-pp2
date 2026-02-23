@@ -7,7 +7,8 @@ async function registerUser(req: Request, res: Response,next: NextFunction) {
     try{
         const user = await registerUserIndb({email, password});
         const token = generateToken({id: user.id, email: user.email}, "secret", {expiresIn: "15m"});
-        res.status(201).send({message: "User registered successfully","token": token});
+        res.cookie("token", token,{httpOnly: true, secure: false, sameSite: "lax", maxAge: 15*60*1000})
+        res.status(201).send({message: "User registered successfully", user});
     }
     catch (error) {
         next(error);
@@ -19,6 +20,7 @@ async function loginUser(req: Request, res: Response,next: NextFunction) {
     try{
         const user = await loginUserIndb({email, password});
         const token = generateToken({id: user.id, email: user.email}, "secret", {expiresIn: "15m"});
+        res.cookie("token", token,{httpOnly: true, secure: false, sameSite: "lax", maxAge: 15*60*1000})
         res.status(200).send({message: "User logged in successfully", user, "token": token});
     }
     catch (error) {
@@ -34,4 +36,9 @@ function getUserProfile(req: Request, res: Response, next: NextFunction) {
     res.status(200).send({message: "User profile retrieved successfully", user: userDetails});
 }
 
-export {registerUser, loginUser, getUserProfile}
+function logoutUser(req: Request, res: Response) {
+    res.clearCookie("token");
+    res.status(200).send({message: "User logged out successfully"});
+}
+
+export {registerUser, loginUser, getUserProfile, logoutUser}

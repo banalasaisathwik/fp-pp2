@@ -17,13 +17,13 @@ function validateInput(req: Request, res: Response, next: NextFunction) {
 }
 
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader?.split(' ')[1];
-    if (!token) {
+    const cookieToken = req.cookies.token;
+    if (!cookieToken) {
         return next(new Error("Access token is missing"));
     }
+
     try {
-        const payload = verifyToken(token,"secret");
+        const payload = verifyToken(cookieToken,"secret");
         req.user = payload;
         next();
     }
